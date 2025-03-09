@@ -15,13 +15,13 @@ async function main() {
     );
     //console.log("Account balance:", (await deployer.getBalance()).toString());
 
-    const Turing = await hre.ethers.getContractFactory("Turing");
+    const BetFactory = await hre.ethers.getContractFactory("BetFactory");
 
-    const turing = await Turing.deploy();
+    const betFactory = await BetFactory.deploy();
 
-    await turing.waitForDeployment();
+    await betFactory.waitForDeployment();
 
-    console.log("turing address:", await turing.getAddress())
+    console.log("betFactory address:", await betFactory.getAddress())
 
 }
 

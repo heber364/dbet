@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import BetFactory from "../contracts/BetFactory.json";
 
-const betFactoryAddress = "";
+const betFactoryAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
 async function createBet(
   signer: ethers.providers.JsonRpcSigner,

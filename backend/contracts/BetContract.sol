@@ -212,4 +212,24 @@ contract BetContract {
     function getTotalBets() public view returns (uint256) {
         return address(this).balance;
     }
+
+    function getMatchDetails()
+        public
+        view
+        returns (
+            string memory,
+            string memory,
+            uint256,
+            bool,
+            string memory
+        )
+    {
+        return (
+            currentMatch.team1,
+            currentMatch.team2,
+            currentMatch.matchDate,
+            currentMatch.isSettled,
+            currentMatch.result
+        );
+    }
 }
