@@ -1,27 +1,39 @@
-import { ethers } from 'ethers';
-import BetFactory from '../contracts/BetFactory.json';
-import { getSigner } from '../wallet';
+import { ethers } from "ethers";
+import BetFactory from "../contracts/BetFactory.json";
 
-const betFactoryAddress = process.env.NEXT_PUBLIC_BET_FACTORY_CONTRACT_ADDRESS;
+const betFactoryAddress = "";
 
-if (!betFactoryAddress) {
-    throw new Error('BetFactory contract address is not defined');
-}
-
-const signer = await getSigner();
-
-const betFactoryContract = new ethers.Contract(
+async function createBet(
+  signer: ethers.providers.JsonRpcSigner,
+  platformFeePercent: number,
+  team1: string,
+  team2: string,
+  matchDate: number
+): Promise<string> {
+  const contract = new ethers.Contract(
     betFactoryAddress,
     BetFactory.abi,
     signer
-);
-
-export async function createBet(platformFeePercent: number, team1: string, team2: string, matchDate: number): Promise<string> {
-    const tx = await betFactoryContract.createBet(platformFeePercent, team1, team2, matchDate);
-    await tx.wait();
-    return tx.hash;
+  );
+  const tx = await contract.createBet(
+    platformFeePercent,
+    team1,
+    team2,
+    matchDate
+  );
+  await tx.wait();
+  return tx.hash;
 }
 
-export async function getBets(): Promise<string[]> {
-    return await betFactoryContract.getBets();
+async function getBets(
+  signer: ethers.providers.JsonRpcSigner
+): Promise<string[]> {
+  const contract = new ethers.Contract(
+    betFactoryAddress,
+    BetFactory.abi,
+    signer
+  );
+  return await contract.getBets();
 }
+
+export { createBet, getBets };
