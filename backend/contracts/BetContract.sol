@@ -221,7 +221,8 @@ contract BetContract {
             string memory,
             uint256,
             bool,
-            string memory
+            string memory,
+            address
         )
     {
         return (
@@ -229,7 +230,8 @@ contract BetContract {
             currentMatch.team2,
             currentMatch.matchDate,
             currentMatch.isSettled,
-            currentMatch.result
+            currentMatch.result,
+            owner
         );
     }
 }
