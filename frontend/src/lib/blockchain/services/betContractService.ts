@@ -6,6 +6,8 @@ type BetDetails = {
   team2: string;
   matchDate: number;
   isSettled: boolean;
+  result: string;
+  owner: string;
 };
 
 async function placeBet(
@@ -96,6 +98,8 @@ async function getMatchDetails(signer: ethers.providers.JsonRpcSigner, betContra
     team2: match.team2,
     matchDate: match.matchDate.toNumber(),
     isSettled: match.isSettled,
+    result: match.result, 
+    owner: match.owner,
   };
 }
 

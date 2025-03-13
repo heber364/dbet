@@ -1,0 +1,41 @@
+[33mcommit dddd3bc3d39ae5430a8f0ec23f80401f1c6eea26[m[33m ([m[1;36mHEAD -> [m[1;32mfrontfeat[m[33m)[m
+Author: lmanfioletti <lucas.manfioletti@gmail.com>
+Date:   Tue Mar 11 12:33:37 2025 -0300
+
+    front initial updates
+
+[33mcommit af4216c6ed8a2e6c50d6e4a4366f2888ce71dde8[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Author: heber364 <heberlimasilva@gmail.com>
+Date:   Sun Mar 9 12:08:08 2025 -0300
+
+    Ajusta o visual da tela e cria uma nova funcao para ver os detalhes da partida
+
+[33mcommit 846f3b9eea659707edb47893ab156bae8c56d330[m
+Author: heber364 <heberlimasilva@gmail.com>
+Date:   Sun Mar 9 11:07:44 2025 -0300
+
+    Ajusta parâmetros dos services dos contratos
+
+[33mcommit 8627dd59ed818882cf76cc1848508c81c5d99e62[m
+Author: heber364 <heberlimasilva@gmail.com>
+Date:   Sun Mar 9 10:49:41 2025 -0300
+
+    Compila contrato e configura os services para se comunicar com os contratos
+
+[33mcommit a3a57f32d6d2ebc3eb97bd2dd14dcd098c5a5662[m
+Author: heber.silva <heber.silva@elogroup.com.br>
+Date:   Wed Mar 5 18:11:19 2025 -0300
+
+    Edit backend readme
+
+[33mcommit 8429fc8e8c222937b7555eb4dbdaba9952018fdc[m
+Author: heber.silva <heber.silva@elogroup.com.br>
+Date:   Wed Mar 5 18:04:03 2025 -0300
+
+    Create backend initial version
+
+[33mcommit 82d514e394028332d8fda5f574453c05f7bf9d8b[m
+Author: heber.silva <heber.silva@elogroup.com.br>
+Date:   Wed Mar 5 18:02:58 2025 -0300
+
+    first commit

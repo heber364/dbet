@@ -13,6 +13,8 @@ struct Match {
     uint256 matchDate;
     bool isSettled;
     string result;
+    string owner;
+    uint256 totalAmount;
 }
 
 contract BetContract {
@@ -40,7 +42,8 @@ contract BetContract {
         uint256 _platformFeePercent,
         string memory _team1,
         string memory _team2,
-        uint256 _matchDate
+        uint256 _matchDate,
+        string memory _owner
     ) {
         require(
             _platformFeePercent <= 100,
@@ -51,6 +54,7 @@ contract BetContract {
         currentMatch.team2 = _team2;
         currentMatch.matchDate = _matchDate;
         currentMatch.isSettled = false;
+        currentMatch.owner = _owner;
         owner = msg.sender; // Define o criador do contrato como owner
     }
 
@@ -98,10 +102,15 @@ contract BetContract {
         _;
     }
 
+    modifier onlyNotOwner() {
+        require(msg.sender != owner, "Only not owner can call this function");
+        _;
+    }
+
     // Função para apostar em um time
     function placeBet(
         string memory _choice
-    ) public payable bettingOpen validBetAmount validChoice(_choice) {
+    ) public payable onlyNotOwner bettingOpen validBetAmount validChoice(_choice) {
         // Adiciona a nova aposta ao array do apostador
         bets[msg.sender].push(Bet({amount: msg.value, choice: _choice}));
 
@@ -221,6 +230,7 @@ contract BetContract {
             string memory,
             uint256,
             bool,
+            string memory,
             string memory
         )
     {
@@ -229,7 +239,8 @@ contract BetContract {
             currentMatch.team2,
             currentMatch.matchDate,
             currentMatch.isSettled,
-            currentMatch.result
+            currentMatch.result,
+            currentMatch.owner
         );
     }
 }
