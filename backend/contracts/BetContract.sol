@@ -15,7 +15,6 @@ struct Match {
     string result;
     string owner;
     uint256 totalAmount;
-    Bet bet; 
 }
 
 contract BetContract {
@@ -104,7 +103,7 @@ contract BetContract {
     }
 
     modifier onlyNotOwner() {
-        require(msg.sender != owner, "Only owner can call this function");
+        require(msg.sender != owner, "Only not owner can call this function");
         _;
     }
 
@@ -232,7 +231,7 @@ contract BetContract {
             uint256,
             bool,
             string memory,
-            string memory,
+            string memory
         )
     {
         return (

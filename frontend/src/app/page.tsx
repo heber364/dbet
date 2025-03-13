@@ -48,6 +48,9 @@ const BetPage = () => {
   const [selectedBet, setSelectedBet] = useState<string | null>(null);
   const [account, setAccount] = useState<string | null>(null);
   const [balance, setBalance] = useState<string>("0");
+  const [isCreateBetDialogOpen, setIsCreateBetDialogOpen] = useState(false);
+  const [isPlaceBetDialogOpen, setIsPlaceBetDialogOpen] = useState(false);
+  const [isSettleBetDialogOpen, setIsSettleBetDialogOpen] = useState(false);
 
   const {
     register: registerCreateBet,
@@ -73,6 +76,14 @@ const BetPage = () => {
   } = useForm<SettleMatchFormData>();
 
   const onCreateBet: SubmitHandler<CreateBetFormData> = async (data) => {
+    const matchDate = new Date(data.matchDate).getTime();
+    const currentDate = Date.now();
+
+    if (matchDate <= currentDate) {
+      alert("A data da partida deve ser no futuro.");
+      return;
+    }
+
     try {
       const provider = getProvider();
       const signer = await getSigner(provider);
@@ -81,11 +92,12 @@ const BetPage = () => {
         10, // platformFeePercent
         data.team1,
         data.team2,
-        Math.floor(new Date(data.matchDate).getTime() / 1000),
+        Math.floor(matchDate / 1000), // Converte para segundos
         account || ''
       );
       console.log("Bet criado com sucesso! TX Hash:", txHash);
       resetCreateBet();
+      setIsCreateBetDialogOpen(false); // Fecha o diálogo
       await loadBets();
     } catch (error) {
       console.error("Erro ao criar bet:", error);
@@ -94,6 +106,14 @@ const BetPage = () => {
 
   const onPlaceBet: SubmitHandler<PlaceBetFormData> = async (data) => {
     if (!selectedBet) return;
+
+    const matchDate = betDetails[selectedBet]?.matchDate * 1000; // Converte para milissegundos
+    const currentDate = Date.now();
+
+    if (matchDate <= currentDate) {
+      alert("Não é possível apostar em partidas que já ocorreram.");
+      return;
+    }
 
     try {
       const provider = getProvider();
@@ -106,6 +126,7 @@ const BetPage = () => {
       );
       console.log("Aposta realizada com sucesso! TX Hash:", txHash);
       resetPlaceBet();
+      setIsPlaceBetDialogOpen(false); // Fecha o diálogo
       setSelectedBet(null);
     } catch (error) {
       console.error("Erro ao apostar:", error);
@@ -121,6 +142,7 @@ const BetPage = () => {
       const txHash = await settleBet(signer, selectedBet, data.result);
       console.log("Resultado inserido com sucesso! TX Hash:", txHash);
       resetSettleMatch();
+      setIsSettleBetDialogOpen(false); // Fecha o diálogo
       await loadBets();
     } catch (error) {
       console.error("Erro ao inserir resultado:", error);
@@ -157,6 +179,10 @@ const BetPage = () => {
     loadAccountInfo();
   }, []);
 
+  // Separa as apostas
+  const userBets = bets.filter((bet) => betDetails[bet]?.owner === account);
+  const otherBets = bets.filter((bet) => betDetails[bet]?.owner !== account);
+
   return (
     <div className="p-8 bg-gray-100 min-h-screen">
       <div className="max-w-4xl mx-auto">
@@ -168,7 +194,7 @@ const BetPage = () => {
 
         <div className="bg-white p-6 rounded-lg shadow-md mb-8">
           <h2 className="text-xl font-semibold mb-4">Criar Nova Aposta</h2>
-          <Dialog>
+          <Dialog open={isCreateBetDialogOpen} onOpenChange={setIsCreateBetDialogOpen}>
             <DialogTrigger asChild>
               <Button className="bg-blue-500 text-white hover:bg-blue-600">Criar Nova Aposta</Button>
             </DialogTrigger>
@@ -217,9 +243,9 @@ const BetPage = () => {
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Lista de Apostas</h2>
+          <h2 className="text-xl font-semibold mb-4">Minhas Apostas (Owner)</h2>
           <ul className="space-y-4">
-            {bets.map((bet, index) => (
+            {userBets.map((bet, index) => (
               <li key={index} className="border p-4 rounded-lg">
                 <div>
                   <p><strong>Time 1:</strong> {betDetails[bet]?.team1}</p>
@@ -228,9 +254,67 @@ const BetPage = () => {
                   <p><strong>Status:</strong> {betDetails[bet]?.isSettled ? "Encerrado" : "Aberto"}</p>
                   <p><strong>Owner:</strong> {betDetails[bet]?.owner}</p>
                 </div>
-                <Dialog>
+                {!betDetails[bet]?.isSettled && (
+                  <Dialog open={isSettleBetDialogOpen} onOpenChange={setIsSettleBetDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button className="bg-red-500 text-white hover:bg-red-600 mt-2" onClick={() => setSelectedBet(bet)}>Inserir Resultado</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Inserir Resultado</DialogTitle>
+                      </DialogHeader>
+                      <form onSubmit={handleSubmitSettleMatch(onSettleMatch)}>
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="result">Resultado</Label>
+                            <Controller
+                              name="result"
+                              control={controlSettleMatch}
+                              defaultValue=""
+                              rules={{ required: "Campo obrigatório" }}
+                              render={({ field }) => (
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Selecione" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value={betDetails[bet]?.team1}>{betDetails[bet]?.team1}</SelectItem>
+                                    <SelectItem value={betDetails[bet]?.team2}>{betDetails[bet]?.team2}</SelectItem>
+                                    <SelectItem value="Draw">Empate</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              )}
+                            />
+                            {errorsSettleMatch.result && (
+                              <p className="text-red-500">{errorsSettleMatch.result.message}</p>
+                            )}
+                          </div>
+                          <Button type="submit" className="bg-red-500 text-white hover:bg-red-600">Inserir</Button>
+                        </div>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-md mt-8">
+          <h2 className="text-xl font-semibold mb-4">Apostas Disponíveis</h2>
+          <ul className="space-y-4">
+            {otherBets.map((bet, index) => (
+              <li key={index} className="border p-4 rounded-lg">
+                <div>
+                  <p><strong>Time 1:</strong> {betDetails[bet]?.team1}</p>
+                  <p><strong>Time 2:</strong> {betDetails[bet]?.team2}</p>
+                  <p><strong>Data da Partida:</strong> {new Date(betDetails[bet]?.matchDate * 1000).toLocaleString()}</p>
+                  <p><strong>Status:</strong> {betDetails[bet]?.isSettled ? "Encerrado" : "Aberto"}</p>
+                  <p><strong>Owner:</strong> {betDetails[bet]?.owner}</p>
+                </div>
+                <Dialog open={isPlaceBetDialogOpen} onOpenChange={setIsPlaceBetDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button className="bg-green-500 text-white hover:bg-green-600 mt-2" onClick={() => setSelectedBet(bet)}>Apostar</Button>
+                    <Button disabled={betDetails[bet]?.isSettled} className="bg-green-500 text-white hover:bg-green-600 mt-2" onClick={() => setSelectedBet(bet)}>Apostar</Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
@@ -278,48 +362,6 @@ const BetPage = () => {
                     </form>
                   </DialogContent>
                 </Dialog>
-
-                {betDetails[bet]?.owner === account && !betDetails[bet]?.isSettled && (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button className="bg-red-500 text-white hover:bg-red-600 mt-2" onClick={() => setSelectedBet(bet)}>Inserir Resultado</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Inserir Resultado</DialogTitle>
-                      </DialogHeader>
-                      <form onSubmit={handleSubmitSettleMatch(onSettleMatch)}>
-                        <div className="space-y-4">
-                          <div>
-                            <Label htmlFor="result">Resultado</Label>
-                            <Controller
-                              name="result"
-                              control={controlSettleMatch}
-                              defaultValue=""
-                              rules={{ required: "Campo obrigatório" }}
-                              render={({ field }) => (
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Selecione" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value={betDetails[bet]?.team1}>{betDetails[bet]?.team1}</SelectItem>
-                                    <SelectItem value={betDetails[bet]?.team2}>{betDetails[bet]?.team2}</SelectItem>
-                                    <SelectItem value="Draw">Empate</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              )}
-                            />
-                            {errorsSettleMatch.result && (
-                              <p className="text-red-500">{errorsSettleMatch.result.message}</p>
-                            )}
-                          </div>
-                          <Button type="submit" className="bg-red-500 text-white hover:bg-red-600">Inserir</Button>
-                        </div>
-                      </form>
-                    </DialogContent>
-                  </Dialog>
-                )}
               </li>
             ))}
           </ul>
