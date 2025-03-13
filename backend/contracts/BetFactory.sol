@@ -12,7 +12,8 @@ contract BetFactory {
         address indexed betAddress,
         string team1,
         string team2,
-        uint256 matchDate
+        uint256 matchDate,
+        string owner
     );
 
     // Função para criar um novo contrato de aposta
@@ -20,16 +21,18 @@ contract BetFactory {
         uint256 _platformFeePercent,
         string memory _team1,
         string memory _team2,
-        uint256 _matchDate
+        uint256 _matchDate,
+        string memory _owner
     ) public {
         BetContract newBet = new BetContract(
             _platformFeePercent,
             _team1,
             _team2,
-            _matchDate
+            _matchDate,
+            _owner
         );
         bets.push(address(newBet));
-        emit BetCreated(address(newBet), _team1, _team2, _matchDate);
+        emit BetCreated(address(newBet), _team1, _team2, _matchDate, _owner); // Inclui o owner no evento
     }
 
     // Função para retornar a lista de contratos de apostas

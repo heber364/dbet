@@ -5,8 +5,14 @@ import { createBet, getBets } from "../lib/blockchain/services/betFactoryService
 import { placeBet, getMatchDetails, settleBet } from "../lib/blockchain/services/betContractService";
 import { getSigner, getAccount, getBalance } from "../lib/blockchain/wallet";
 import { getProvider } from "../lib/blockchain/provider";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -54,6 +60,7 @@ const BetPage = () => {
     register: registerPlaceBet,
     handleSubmit: handleSubmitPlaceBet,
     reset: resetPlaceBet,
+    control: controlPlaceBet,
     formState: { errors: errorsPlaceBet },
   } = useForm<PlaceBetFormData>();
 
@@ -61,6 +68,7 @@ const BetPage = () => {
     register: registerSettleMatch,
     handleSubmit: handleSubmitSettleMatch,
     reset: resetSettleMatch,
+    control: controlSettleMatch,
     formState: { errors: errorsSettleMatch },
   } = useForm<SettleMatchFormData>();
 
@@ -73,7 +81,8 @@ const BetPage = () => {
         10, // platformFeePercent
         data.team1,
         data.team2,
-        Math.floor(new Date(data.matchDate).getTime() / 1000)
+        Math.floor(new Date(data.matchDate).getTime() / 1000),
+        account || ''
       );
       console.log("Bet criado com sucesso! TX Hash:", txHash);
       resetCreateBet();
@@ -89,7 +98,12 @@ const BetPage = () => {
     try {
       const provider = getProvider();
       const signer = await getSigner(provider);
-      const txHash = await placeBet(signer, selectedBet, data.choice, data.amount);
+      const txHash = await placeBet(
+        signer,
+        selectedBet,
+        data.choice,
+        data.amount
+      );
       console.log("Aposta realizada com sucesso! TX Hash:", txHash);
       resetPlaceBet();
       setSelectedBet(null);
@@ -212,6 +226,7 @@ const BetPage = () => {
                   <p><strong>Time 2:</strong> {betDetails[bet]?.team2}</p>
                   <p><strong>Data da Partida:</strong> {new Date(betDetails[bet]?.matchDate * 1000).toLocaleString()}</p>
                   <p><strong>Status:</strong> {betDetails[bet]?.isSettled ? "Encerrado" : "Aberto"}</p>
+                  <p><strong>Owner:</strong> {betDetails[bet]?.owner}</p>
                 </div>
                 <Dialog>
                   <DialogTrigger asChild>
@@ -225,18 +240,24 @@ const BetPage = () => {
                       <div className="space-y-4">
                         <div>
                           <Label htmlFor="choice">Escolha</Label>
-                          <Select
-                            {...registerPlaceBet("choice", { required: "Campo obrigatório" })}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value={betDetails[bet]?.team1}>{betDetails[bet]?.team1}</SelectItem>
-                              <SelectItem value={betDetails[bet]?.team2}>{betDetails[bet]?.team2}</SelectItem>
-                              <SelectItem value="Draw">Empate</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <Controller
+                            name="choice"
+                            control={controlPlaceBet}
+                            defaultValue=""
+                            rules={{ required: "Campo obrigatório" }}
+                            render={({ field }) => (
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Selecione" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value={betDetails[bet]?.team1}>{betDetails[bet]?.team1}</SelectItem>
+                                  <SelectItem value={betDetails[bet]?.team2}>{betDetails[bet]?.team2}</SelectItem>
+                                  <SelectItem value="Draw">Empate</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            )}
+                          />
                           {errorsPlaceBet.choice && (
                             <p className="text-red-500">{errorsPlaceBet.choice.message}</p>
                           )}
@@ -271,18 +292,24 @@ const BetPage = () => {
                         <div className="space-y-4">
                           <div>
                             <Label htmlFor="result">Resultado</Label>
-                            <Select
-                              {...registerSettleMatch("result", { required: "Campo obrigatório" })}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Selecione" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value={betDetails[bet]?.team1}>{betDetails[bet]?.team1}</SelectItem>
-                                <SelectItem value={betDetails[bet]?.team2}>{betDetails[bet]?.team2}</SelectItem>
-                                <SelectItem value="Draw">Empate</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            <Controller
+                              name="result"
+                              control={controlSettleMatch}
+                              defaultValue=""
+                              rules={{ required: "Campo obrigatório" }}
+                              render={({ field }) => (
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Selecione" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value={betDetails[bet]?.team1}>{betDetails[bet]?.team1}</SelectItem>
+                                    <SelectItem value={betDetails[bet]?.team2}>{betDetails[bet]?.team2}</SelectItem>
+                                    <SelectItem value="Draw">Empate</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              )}
+                            />
                             {errorsSettleMatch.result && (
                               <p className="text-red-500">{errorsSettleMatch.result.message}</p>
                             )}

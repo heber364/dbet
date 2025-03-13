@@ -98,7 +98,7 @@ async function getMatchDetails(signer: ethers.providers.JsonRpcSigner, betContra
     team2: match.team2,
     matchDate: match.matchDate.toNumber(),
     isSettled: match.isSettled,
-    result: match.result,
+    result: match.result, 
     owner: match.owner,
   };
 }
