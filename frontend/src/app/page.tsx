@@ -272,7 +272,7 @@ const BetPage = () => {
                               defaultValue=""
                               rules={{ required: "Campo obrigatório" }}
                               render={({ field }) => (
-                                <Select onValueChange={field.onChange} value={field.value}>
+                                <Select onValueChange={field.onChange} value={field.value}  {...registerSettleMatch("result", { required: "Campo obrigatório" })}>
                                   <SelectTrigger>
                                     <SelectValue placeholder="Selecione" />
                                   </SelectTrigger>
