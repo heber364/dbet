@@ -8,7 +8,7 @@ async function createBet(
   platformFeePercent: number,
   team1: string,
   team2: string,
-  matchDate: number
+  matchDate: number,
 ): Promise<string> {
   const contract = new ethers.Contract(
     betFactoryAddress,
@@ -19,7 +19,7 @@ async function createBet(
     platformFeePercent,
     team1,
     team2,
-    matchDate
+    matchDate,
   );
   await tx.wait();
   return tx.hash;

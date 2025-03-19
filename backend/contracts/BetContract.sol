@@ -13,6 +13,8 @@ struct Match {
     uint256 matchDate;
     bool isSettled;
     string result;
+    address owner;
+    uint256 totalAmount;
 }
 
 contract BetContract {
@@ -40,7 +42,8 @@ contract BetContract {
         uint256 _platformFeePercent,
         string memory _team1,
         string memory _team2,
-        uint256 _matchDate
+        uint256 _matchDate,
+        address  _owner
     ) {
         require(
             _platformFeePercent <= 100,
@@ -51,7 +54,7 @@ contract BetContract {
         currentMatch.team2 = _team2;
         currentMatch.matchDate = _matchDate;
         currentMatch.isSettled = false;
-        owner = msg.sender; // Define o criador do contrato como owner
+        currentMatch.owner = _owner;
     }
 
     // Função auxiliar para comparar strings
@@ -94,14 +97,19 @@ contract BetContract {
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner can call this function");
+        require(msg.sender == currentMatch.owner, "Only owner can call this function");
+        _;
+    }
+
+    modifier onlyNotOwner() {
+        require(msg.sender != currentMatch.owner, "Only not owner can call this function");
         _;
     }
 
     // Função para apostar em um time
     function placeBet(
         string memory _choice
-    ) public payable bettingOpen validBetAmount validChoice(_choice) {
+    ) public payable onlyNotOwner bettingOpen validBetAmount validChoice(_choice) {
         // Adiciona a nova aposta ao array do apostador
         bets[msg.sender].push(Bet({amount: msg.value, choice: _choice}));
 
@@ -221,7 +229,8 @@ contract BetContract {
             string memory,
             uint256,
             bool,
-            string memory
+            string memory,
+            address
         )
     {
         return (
@@ -229,7 +238,8 @@ contract BetContract {
             currentMatch.team2,
             currentMatch.matchDate,
             currentMatch.isSettled,
-            currentMatch.result
+            currentMatch.result,
+            currentMatch.owner
         );
     }
 }
