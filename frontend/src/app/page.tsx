@@ -93,7 +93,6 @@ const BetPage = () => {
         data.team1,
         data.team2,
         Math.floor(matchDate / 1000), // Converte para segundos
-        account || ''
       );
       console.log("Bet criado com sucesso! TX Hash:", txHash);
       resetCreateBet();

@@ -13,7 +13,7 @@ struct Match {
     uint256 matchDate;
     bool isSettled;
     string result;
-    string owner;
+    address owner;
     uint256 totalAmount;
 }
 
@@ -43,7 +43,7 @@ contract BetContract {
         string memory _team1,
         string memory _team2,
         uint256 _matchDate,
-        string memory _owner
+        address  _owner
     ) {
         require(
             _platformFeePercent <= 100,
@@ -55,7 +55,6 @@ contract BetContract {
         currentMatch.matchDate = _matchDate;
         currentMatch.isSettled = false;
         currentMatch.owner = _owner;
-        owner = msg.sender; // Define o criador do contrato como owner
     }
 
     // Função auxiliar para comparar strings
@@ -98,12 +97,12 @@ contract BetContract {
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner can call this function");
+        require(msg.sender == currentMatch.owner, "Only owner can call this function");
         _;
     }
 
     modifier onlyNotOwner() {
-        require(msg.sender != owner, "Only not owner can call this function");
+        require(msg.sender != currentMatch.owner, "Only not owner can call this function");
         _;
     }
 
@@ -231,7 +230,7 @@ contract BetContract {
             uint256,
             bool,
             string memory,
-            string memory
+            address
         )
     {
         return (
