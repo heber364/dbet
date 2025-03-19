@@ -180,7 +180,8 @@ const BetPage = () => {
 
   // Separa as apostas
   const userBets = bets.filter((bet) => betDetails[bet]?.owner === account);
-  const otherBets = bets.filter((bet) => betDetails[bet]?.owner !== account);
+  const otherBetsAvailable = bets.filter((bet) => betDetails[bet]?.owner !== account && !betDetails[bet]?.isSettled);
+  const otherBetsUnavailable = bets.filter((bet) => betDetails[bet]?.owner !== account && betDetails[bet]?.isSettled);
 
   return (
     <div className="p-8 bg-gray-100 min-h-screen">
@@ -302,7 +303,7 @@ const BetPage = () => {
         <div className="bg-white p-6 rounded-lg shadow-md mt-8">
           <h2 className="text-xl font-semibold mb-4">Apostas Disponíveis</h2>
           <ul className="space-y-4">
-            {otherBets.map((bet, index) => (
+            {otherBetsAvailable.map((bet, index) => (
               <li key={index} className="border p-4 rounded-lg">
                 <div>
                   <p><strong>Time 1:</strong> {betDetails[bet]?.team1}</p>
@@ -361,6 +362,23 @@ const BetPage = () => {
                     </form>
                   </DialogContent>
                 </Dialog>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-md mt-8">
+          <h2 className="text-xl font-semibold mb-4">Apostas Encerradas</h2>
+          <ul className="space-y-4">
+            {otherBetsUnavailable.map((bet, index) => (
+              <li key={index} className="border p-4 rounded-lg">
+                <div>
+                  <p><strong>Time 1:</strong> {betDetails[bet]?.team1}</p>
+                  <p><strong>Time 2:</strong> {betDetails[bet]?.team2}</p>
+                  <p><strong>Data da Partida:</strong> {new Date(betDetails[bet]?.matchDate * 1000).toLocaleString()}</p>
+                  <p><strong>Status:</strong> {betDetails[bet]?.isSettled ? "Encerrado" : "Aberto"}</p>
+                  <p><strong>Owner:</strong> {betDetails[bet]?.owner}</p>
+                </div>
               </li>
             ))}
           </ul>
