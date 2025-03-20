@@ -15,4 +15,4 @@ type BetAmount = {
   totalDraw: string;
 };
 
-export type { BetDetails };
+export type { BetDetails, BetAmount };
