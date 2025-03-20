@@ -16,7 +16,7 @@ struct Match {
     bool isSettled;
     string result;
     address owner;
-    uint256 totalAmount;
+    uint256 ownerAmount; 
 }
 
 contract BetContract {
@@ -31,7 +31,6 @@ contract BetContract {
 
     // Taxa da plataforma (dinâmica)
     uint256 public platformFeePercent;
-    address public owner;
 
     // Eventos
     event BetPlaced(address indexed better, uint256 amount, string choice);
@@ -57,6 +56,8 @@ contract BetContract {
         currentMatch.matchDate = _matchDate;
         currentMatch.isSettled = false;
         currentMatch.owner = _owner;
+        currentMatch.ownerAmount = 0;
+
     }
 
     // Função auxiliar para comparar strings
@@ -149,9 +150,10 @@ contract BetContract {
         // 2. Calcular a taxa da plataforma com base no total apostado
         uint256 platformFee = (totalBets * platformFeePercent) / 100;
         uint256 remainingPool = totalBets - platformFee;
+        currentMatch.ownerAmount = platformFee;
 
         // 3. Enviar a taxa da plataforma para o owner
-        payable(owner).transfer(platformFee);
+        payable(currentMatch.owner).transfer(platformFee);
         emit PlatformFeeCollected(platformFee);
 
         // 4. Calcular o total apostado no resultado vencedor
@@ -251,7 +253,8 @@ contract BetContract {
             uint256,
             bool,
             string memory,
-            address
+            address,
+            uint256
         )
     {
         return (
@@ -260,7 +263,8 @@ contract BetContract {
             currentMatch.matchDate,
             currentMatch.isSettled,
             currentMatch.result,
-            currentMatch.owner
+            currentMatch.owner,
+            currentMatch.ownerAmount
         );
     }
 }
