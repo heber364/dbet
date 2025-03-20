@@ -1,5 +1,6 @@
 import { ethers } from "ethers";
 import BetContract from "../contracts/BetContract.json";
+<<<<<<< HEAD
 
 export type BetDetails = {
   team1: string;
@@ -16,6 +17,10 @@ type BetAmount = {
   totalTeam2: string;
   totalDraw: string;
 };
+=======
+import { Bet } from "@/types/bet"
+import { BetDetails } from "@/types/betDetails"
+>>>>>>> main
 
 async function placeBet(
   signer: ethers.providers.JsonRpcSigner,
@@ -104,7 +109,34 @@ async function getMatchDetails(signer: ethers.providers.JsonRpcSigner, betContra
     isSettled: match.isSettled,
     result: match.result, 
     owner: match.owner,
+<<<<<<< HEAD
     amounts: amounts
+=======
+    ownerAmount: ethers.utils.formatEther(match.ownerAmount),
+  };
+}
+
+
+
+async function getMyBets(
+  signer: ethers.providers.JsonRpcSigner,
+  betContractAddress: string
+): Promise<Bet> {
+  const contract = new ethers.Contract(
+    betContractAddress,
+    BetContract.abi,
+    signer
+  );
+  
+
+  const bet = await contract.getMyBets();
+  
+  return {
+    choice: bet.choice,
+    amount: ethers.utils.formatEther(bet.amount),
+    status: bet.status,
+    amountWon: ethers.utils.formatEther(bet.amountWon),
+>>>>>>> main
   };
 }
 
@@ -114,5 +146,6 @@ export {
   getTotalBetsByChoice,
   isMatchSettled,
   getTotalBets,
-  getMatchDetails
+  getMatchDetails,
+  getMyBets
 };
