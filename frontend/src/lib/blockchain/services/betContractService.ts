@@ -3,6 +3,15 @@ import BetContract from "../contracts/BetContract.json";
 import { Bet } from "@/types/bet"
 import { BetDetails, BetAmount } from "@/types/betDetails"
 
+function getContract(
+  signer: ethers.providers.JsonRpcSigner,
+  betContractAddress: string): ethers.Contract{
+  return new ethers.Contract(
+    betContractAddress,
+    BetContract.abi,
+    signer
+  );
+}
 
 async function placeBet(
   signer: ethers.providers.JsonRpcSigner,
@@ -120,6 +129,7 @@ async function getMyBets(
 }
 
 export {
+  getContract,
   placeBet,
   settleBet,
   getTotalBetsByChoice,
