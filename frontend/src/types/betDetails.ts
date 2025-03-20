@@ -6,6 +6,13 @@ type BetDetails = {
     result: string;
     owner: string;
     ownerAmount: string;
+    amounts: BetAmount;
+};
+
+type BetAmount = {
+  totalTeam1: string;
+  totalTeam2: string;
+  totalDraw: string;
 };
 
 export type { BetDetails };

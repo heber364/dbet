@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { createBet, getBets } from "../lib/blockchain/services/betFactoryService";
-import { placeBet, getMatchDetails, settleBet, getMyBets } from "../lib/blockchain/services/betContractService";
+import { placeBet, getMatchDetails, settleBet, getMyBets, BetDetails } from "../lib/blockchain/services/betContractService";
 import { getSigner, getAccount, getBalance } from "../lib/blockchain/wallet";
 import { getProvider } from "../lib/blockchain/provider";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
@@ -35,7 +35,6 @@ type PlaceBetFormData = {
 type SettleMatchFormData = {
   result: string;
 };
-
 
 
 const BetPage = () => {
@@ -284,8 +283,16 @@ const BetPage = () => {
                   <p><strong>Data da Partida:</strong> {new Date(betDetails[bet]?.matchDate * 1000).toLocaleString()}</p>
                   <p><strong>Status:</strong> {betDetails[bet]?.isSettled ? "Encerrado" : "Aberto"}</p>
                   <p><strong>Owner:</strong> {betDetails[bet]?.owner}</p>
+
+                </div>
+                <div>
+                  <p><strong>Total apostado no {betDetails[bet]?.team1}:</strong> {betDetails[bet]?.amounts.totalTeam1}</p>
+                  <p><strong>Total apostado no empate:</strong> {betDetails[bet]?.amounts.totalDraw}</p>
+                  <p><strong>Total apostado no {betDetails[bet]?.team2}:</strong> {betDetails[bet]?.amounts.totalTeam2}</p>
+
                   <p><strong>Resultado:</strong> {betDetails[bet]?.result}</p>
                   <p><strong>Valor recebido:</strong> {betDetails[bet]?.ownerAmount}</p>
+
 
                 </div>
                 {!betDetails[bet]?.isSettled && (
@@ -312,8 +319,8 @@ const BetPage = () => {
                                     <SelectValue placeholder="Selecione" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value={betDetails[bet]?.team1}>{betDetails[bet]?.team1}</SelectItem>
-                                    <SelectItem value={betDetails[bet]?.team2}>{betDetails[bet]?.team2}</SelectItem>
+                                    <SelectItem value={betDetails[selectedBet!]?.team1}>{betDetails[selectedBet!]?.team1}</SelectItem>
+                                    <SelectItem value={betDetails[selectedBet!]?.team2}>{betDetails[selectedBet!]?.team2}</SelectItem>
                                     <SelectItem value="Draw">Empate</SelectItem>
                                   </SelectContent>
                                 </Select>
@@ -346,6 +353,9 @@ const BetPage = () => {
                   <p><strong>Data da Partida:</strong> {new Date(betDetails[bet]?.matchDate * 1000).toLocaleString()}</p>
                   <p><strong>Status:</strong> {betDetails[bet]?.isSettled ? "Encerrado" : "Aberto"}</p>
                   <p><strong>Owner:</strong> {betDetails[bet]?.owner}</p>
+                  <p><strong>Total apostado no {betDetails[bet]?.team1}:</strong> {betDetails[bet]?.amounts.totalTeam1}</p>
+                  <p><strong>Total apostado no empate:</strong> {betDetails[bet]?.amounts.totalDraw}</p>
+                  <p><strong>Total apostado no {betDetails[bet]?.team2}:</strong> {betDetails[bet]?.amounts.totalTeam2}</p>
                   {betUser[bet] && (
                     <>
                       <p><strong>Valor apostado:</strong> {betUser[bet].amount}</p>
@@ -353,7 +363,6 @@ const BetPage = () => {
                     </>
                   )}
 
-                  {/* <p><strong>Minha escolha: {loadBetByUser(bet)}</strong></p> */}
 
                 </div>
                 <Dialog open={isPlaceBetDialogOpen} onOpenChange={setIsPlaceBetDialogOpen}>
@@ -381,8 +390,8 @@ const BetPage = () => {
                                   <SelectValue placeholder="Selecione" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value={betDetails[bet]?.team1}>{betDetails[bet]?.team1}</SelectItem>
-                                  <SelectItem value={betDetails[bet]?.team2}>{betDetails[bet]?.team2}</SelectItem>
+                                  <SelectItem value={betDetails[selectedBet!]?.team1}>{betDetails[selectedBet!]?.team1}</SelectItem>
+                                  <SelectItem value={betDetails[selectedBet!]?.team2}>{betDetails[selectedBet!]?.team2}</SelectItem>
                                   <SelectItem value="Draw">Empate</SelectItem>
                                 </SelectContent>
                               </Select>
@@ -425,7 +434,9 @@ const BetPage = () => {
                   <p><strong>Data da Partida:</strong> {new Date(betDetails[bet]?.matchDate * 1000).toLocaleString()}</p>
                   <p><strong>Status:</strong> {betDetails[bet]?.isSettled ? "Encerrado" : "Aberto"}</p>
                   <p><strong>Owner:</strong> {betDetails[bet]?.owner}</p>
-
+                  <p><strong>Total apostado no {betDetails[bet]?.team1}:</strong> {betDetails[bet]?.amounts.totalTeam1}</p>
+                  <p><strong>Total apostado no empate:</strong> {betDetails[bet]?.amounts.totalDraw}</p>
+                  <p><strong>Total apostado no {betDetails[bet]?.team2}:</strong> {betDetails[bet]?.amounts.totalTeam2}</p>
                   <p><strong>Resultado:</strong> {betDetails[bet]?.result}</p>
                   {betUser[bet] && (
                     <>
