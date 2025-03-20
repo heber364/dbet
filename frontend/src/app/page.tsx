@@ -303,8 +303,8 @@ const BetPage = () => {
                                     <SelectValue placeholder="Selecione" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value={betDetails[bet]?.team1}>{betDetails[bet]?.team1}</SelectItem>
-                                    <SelectItem value={betDetails[bet]?.team2}>{betDetails[bet]?.team2}</SelectItem>
+                                    <SelectItem value={betDetails[selectedBet!]?.team1}>{betDetails[selectedBet!]?.team1}</SelectItem>
+                                    <SelectItem value={betDetails[selectedBet!]?.team2}>{betDetails[selectedBet!]?.team2}</SelectItem>
                                     <SelectItem value="Draw">Empate</SelectItem>
                                   </SelectContent>
                                 </Select>
@@ -381,8 +381,8 @@ const BetPage = () => {
                                   <SelectValue placeholder="Selecione" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value={betDetails[bet]?.team1}>{betDetails[bet]?.team1}</SelectItem>
-                                  <SelectItem value={betDetails[bet]?.team2}>{betDetails[bet]?.team2}</SelectItem>
+                                  <SelectItem value={betDetails[selectedBet!]?.team1}>{betDetails[selectedBet!]?.team1}</SelectItem>
+                                  <SelectItem value={betDetails[selectedBet!]?.team2}>{betDetails[selectedBet!]?.team2}</SelectItem>
                                   <SelectItem value="Draw">Empate</SelectItem>
                                 </SelectContent>
                               </Select>
