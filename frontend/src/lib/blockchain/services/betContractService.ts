@@ -114,11 +114,15 @@ async function getMyBets(
     BetContract.abi,
     signer
   );
+  
+
   const bet = await contract.getMyBets();
+  
   return {
     choice: bet.choice,
     amount: ethers.utils.formatEther(bet.amount),
     status: bet.status,
+    amountWon: ethers.utils.formatEther(bet.amountWon),
   };
 }
 

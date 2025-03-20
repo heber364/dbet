@@ -6,6 +6,7 @@ struct Bet {
     uint256 amount;
     string choice;
     string status;
+    uint256 amountWon;
 }
 
 struct Match {
@@ -125,7 +126,7 @@ contract BetContract {
     {
         // Adiciona a nova aposta ao array do apostador
         bets[msg.sender].push(
-            Bet({amount: msg.value, choice: _choice, status: "pending"})
+            Bet({amount: msg.value, choice: _choice, status: "pending", amountWon: 0})
         );
 
         // Adiciona o apostador à lista de apostadores, se ainda não estiver lá
@@ -178,6 +179,7 @@ contract BetContract {
                         totalWinningBets;
                     totalReward += reward;
                     bet.status = "Won";
+                    bet.amountWon = reward;
                 } else {
                     bet.status = "Lost";
                 }
@@ -236,6 +238,7 @@ contract BetContract {
     }
 
     function getMyBets() public view returns (Bet memory) {
+        require(bets[msg.sender].length > 0, "No bets found for this user");
         return bets[msg.sender][0];
     }
 
