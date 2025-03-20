@@ -5,6 +5,8 @@ pragma solidity ^0.8.0;
 struct Bet {
     uint256 amount;
     string choice;
+    string status;
+    uint256 amountWon;
 }
 
 struct Match {
@@ -106,12 +108,26 @@ contract BetContract {
         _;
     }
 
+    modifier oneBetPerUser() {
+        require(bets[msg.sender].length == 0, "Only one bet per user allowed");
+        _;
+    }
+
     // Função para apostar em um time
     function placeBet(
         string memory _choice
-    ) public payable onlyNotOwner bettingOpen validBetAmount validChoice(_choice) {
+    )
+        public
+        payable onlyNotOwner
+        bettingOpen
+        validBetAmount
+        validChoice(_choice)
+        oneBetPerUser
+    {
         // Adiciona a nova aposta ao array do apostador
-        bets[msg.sender].push(Bet({amount: msg.value, choice: _choice}));
+        bets[msg.sender].push(
+            Bet({amount: msg.value, choice: _choice, status: "pending", amountWon: 0})
+        );
 
         // Adiciona o apostador à lista de apostadores, se ainda não estiver lá
         if (bets[msg.sender].length == 1) {
@@ -129,12 +145,6 @@ contract BetContract {
 
         // 1. Calcular o total apostado
         uint256 totalBets = address(this).balance;
-        // for (uint256 i = 0; i < bettors.length; i++) {
-        //     address bettorAddress = bettors[i];
-        //     for (uint256 j = 0; j < bets[bettorAddress].length; j++) {
-        //         totalBets += bets[bettorAddress][j].amount;
-        //     }
-        // }
 
         // 2. Calcular a taxa da plataforma com base no total apostado
         uint256 platformFee = (totalBets * platformFeePercent) / 100;
@@ -162,10 +172,16 @@ contract BetContract {
 
             // Calcular a recompensa total do apostador
             for (uint256 j = 0; j < bets[bettorAddress].length; j++) {
-                if (stringsEqual(bets[bettorAddress][j].choice, _result)) {
-                    uint256 reward = (bets[bettorAddress][j].amount *
-                        remainingPool) / totalWinningBets;
+                Bet storage bet = bets[bettorAddress][j];
+
+                if (stringsEqual(bet.choice, _result)) {
+                    uint256 reward = (bet.amount * remainingPool) /
+                        totalWinningBets;
                     totalReward += reward;
+                    bet.status = "Won";
+                    bet.amountWon = reward;
+                } else {
+                    bet.status = "Lost";
                 }
             }
 
@@ -219,6 +235,11 @@ contract BetContract {
     // Função para consultar o total apostado
     function getTotalBets() public view returns (uint256) {
         return address(this).balance;
+    }
+
+    function getMyBets() public view returns (Bet memory) {
+        require(bets[msg.sender].length > 0, "No bets found for this user");
+        return bets[msg.sender][0];
     }
 
     function getMatchDetails()
