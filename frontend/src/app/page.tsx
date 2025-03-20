@@ -206,6 +206,7 @@ const BetPage = () => {
 
   // Separa as apostas
   const userBets = bets.filter((bet) => betDetails[bet]?.owner === account);
+
   const openBets = bets.filter((bet) => betDetails[bet]?.owner !== account && !betDetails[bet]?.isSettled);
   const closeBets = bets.filter((bet) => betDetails[bet]?.owner !== account && betDetails[bet]?.isSettled);
 
@@ -337,6 +338,7 @@ const BetPage = () => {
           <h2 className="text-xl font-semibold mb-4">Apostas Disponíveis</h2>
           <ul className="space-y-4">
             {openBets.map((bet, index) => (
+
               <li key={index} className="border p-4 rounded-lg">
                 <div>
                   <p><strong>Time 1:</strong> {betDetails[bet]?.team1}</p>
@@ -410,10 +412,12 @@ const BetPage = () => {
             ))}
           </ul>
         </div>
+
         <div className="bg-white p-6 rounded-lg shadow-md mt-8">
           <h2 className="text-xl font-semibold mb-4">Apostas Encerradas</h2>
           <ul className="space-y-4">
             {closeBets.map((bet, index) => (
+
               <li key={index} className="border p-4 rounded-lg">
                 <div>
                   <p><strong>Time 1:</strong> {betDetails[bet]?.team1}</p>
@@ -421,6 +425,7 @@ const BetPage = () => {
                   <p><strong>Data da Partida:</strong> {new Date(betDetails[bet]?.matchDate * 1000).toLocaleString()}</p>
                   <p><strong>Status:</strong> {betDetails[bet]?.isSettled ? "Encerrado" : "Aberto"}</p>
                   <p><strong>Owner:</strong> {betDetails[bet]?.owner}</p>
+
                   <p><strong>Resultado:</strong> {betDetails[bet]?.result}</p>
                   {betUser[bet] && (
                     <>
@@ -436,11 +441,7 @@ const BetPage = () => {
 
                     </>
                   )}
-
-
-
                 </div>
-
               </li>
             ))}
           </ul>
