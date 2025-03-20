@@ -2,11 +2,9 @@
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { createBet, getBets } from "../lib/blockchain/services/betFactoryService";
-<<<<<<< HEAD
-import { placeBet, getMatchDetails, settleBet, BetDetails } from "../lib/blockchain/services/betContractService";
-=======
+
 import { placeBet, getMatchDetails, settleBet, getMyBets } from "../lib/blockchain/services/betContractService";
->>>>>>> main
+
 import { getSigner, getAccount, getBalance } from "../lib/blockchain/wallet";
 import { getProvider } from "../lib/blockchain/provider";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
@@ -40,11 +38,6 @@ type SettleMatchFormData = {
   result: string;
 };
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> main
 const BetPage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
