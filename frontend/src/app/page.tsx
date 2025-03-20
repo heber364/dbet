@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { createBet, getBets } from "../lib/blockchain/services/betFactoryService";
-import { placeBet, getMatchDetails, settleBet } from "../lib/blockchain/services/betContractService";
+import { placeBet, getMatchDetails, settleBet, BetDetails } from "../lib/blockchain/services/betContractService";
 import { getSigner, getAccount, getBalance } from "../lib/blockchain/wallet";
 import { getProvider } from "../lib/blockchain/provider";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
@@ -31,15 +31,6 @@ type PlaceBetFormData = {
 
 type SettleMatchFormData = {
   result: string;
-};
-
-type BetDetails = {
-  team1: string;
-  team2: string;
-  matchDate: number;
-  isSettled: boolean;
-  result: string;
-  owner: string;
 };
 
 const BetPage = () => {
@@ -254,6 +245,11 @@ const BetPage = () => {
                   <p><strong>Status:</strong> {betDetails[bet]?.isSettled ? "Encerrado" : "Aberto"}</p>
                   <p><strong>Owner:</strong> {betDetails[bet]?.owner}</p>
                 </div>
+                <div>
+                  <p><strong>Total apostado no {betDetails[bet]?.team1}:</strong> {betDetails[bet]?.amounts.totalTeam1}</p>
+                  <p><strong>Total apostado no empate:</strong> {betDetails[bet]?.amounts.totalDraw}</p>
+                  <p><strong>Total apostado no {betDetails[bet]?.team2}:</strong> {betDetails[bet]?.amounts.totalTeam2}</p>
+                </div>
                 {!betDetails[bet]?.isSettled && (
                   <Dialog open={isSettleBetDialogOpen} onOpenChange={setIsSettleBetDialogOpen}>
                     <DialogTrigger asChild>
@@ -311,6 +307,11 @@ const BetPage = () => {
                   <p><strong>Data da Partida:</strong> {new Date(betDetails[bet]?.matchDate * 1000).toLocaleString()}</p>
                   <p><strong>Status:</strong> {betDetails[bet]?.isSettled ? "Encerrado" : "Aberto"}</p>
                   <p><strong>Owner:</strong> {betDetails[bet]?.owner}</p>
+                </div>
+                <div>
+                  <p><strong>Total apostado no {betDetails[bet]?.team1}:</strong> {betDetails[bet]?.amounts.totalTeam1}</p>
+                  <p><strong>Total apostado no empate:</strong> {betDetails[bet]?.amounts.totalDraw}</p>
+                  <p><strong>Total apostado no {betDetails[bet]?.team2}:</strong> {betDetails[bet]?.amounts.totalTeam2}</p>
                 </div>
                 <Dialog open={isPlaceBetDialogOpen} onOpenChange={setIsPlaceBetDialogOpen}>
                   <DialogTrigger asChild>
@@ -378,6 +379,11 @@ const BetPage = () => {
                   <p><strong>Data da Partida:</strong> {new Date(betDetails[bet]?.matchDate * 1000).toLocaleString()}</p>
                   <p><strong>Status:</strong> {betDetails[bet]?.isSettled ? "Encerrado" : "Aberto"}</p>
                   <p><strong>Owner:</strong> {betDetails[bet]?.owner}</p>
+                </div>
+                <div>
+                  <p><strong>Total apostado no {betDetails[bet]?.team1}:</strong> {betDetails[bet]?.amounts.totalTeam1}</p>
+                  <p><strong>Total apostado no empate:</strong> {betDetails[bet]?.amounts.totalDraw}</p>
+                  <p><strong>Total apostado no {betDetails[bet]?.team2}:</strong> {betDetails[bet]?.amounts.totalTeam2}</p>
                 </div>
               </li>
             ))}
