@@ -1,14 +1,7 @@
 import { ethers } from "ethers";
 import BetContract from "../contracts/BetContract.json";
 import { Bet } from "@/types/bet"
-type BetDetails = {
-  team1: string;
-  team2: string;
-  matchDate: number;
-  isSettled: boolean;
-  result: string;
-  owner: string;
-};
+import { BetDetails } from "@/types/betDetails"
 
 async function placeBet(
   signer: ethers.providers.JsonRpcSigner,
@@ -100,6 +93,7 @@ async function getMatchDetails(signer: ethers.providers.JsonRpcSigner, betContra
     isSettled: match.isSettled,
     result: match.result, 
     owner: match.owner,
+    ownerAmount: ethers.utils.formatEther(match.ownerAmount),
   };
 }
 

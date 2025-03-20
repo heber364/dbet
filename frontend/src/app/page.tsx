@@ -18,7 +18,9 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-import { Bet } from "@/types/bet"
+import { Bet, BetStatus } from "@/types/bet"
+import { BetDetails } from "@/types/betDetails"
+
 type CreateBetFormData = {
   team1: string;
   team2: string;
@@ -32,15 +34,6 @@ type PlaceBetFormData = {
 
 type SettleMatchFormData = {
   result: string;
-};
-
-type BetDetails = {
-  team1: string;
-  team2: string;
-  matchDate: number;
-  isSettled: boolean;
-  result: string;
-  owner: string;
 };
 
 
@@ -155,7 +148,7 @@ const BetPage = () => {
   };
 
   const loadBets = async () => {
-    
+
     try {
       const provider = getProvider();
       const signer = await getSigner(provider);
@@ -193,6 +186,14 @@ const BetPage = () => {
     setBalance(ethers.utils.formatEther(balance));
   };
 
+  const statusMap = (_status: BetStatus): string => {
+    const status = {
+      "Pending": "Pendente",
+      "Won": "Ganhou",
+      "Lost": "Perdeu",
+    }
+    return status[_status];
+  }
 
   useEffect(() => {
     if (!(typeof window !== "undefined" && window.ethereum)) {
@@ -282,6 +283,8 @@ const BetPage = () => {
                   <p><strong>Data da Partida:</strong> {new Date(betDetails[bet]?.matchDate * 1000).toLocaleString()}</p>
                   <p><strong>Status:</strong> {betDetails[bet]?.isSettled ? "Encerrado" : "Aberto"}</p>
                   <p><strong>Owner:</strong> {betDetails[bet]?.owner}</p>
+                  <p><strong>Resultado:</strong> {betDetails[bet]?.result}</p>
+                  <p><strong>Valor recebido:</strong> {betDetails[bet]?.ownerAmount}</p>
 
                 </div>
                 {!betDetails[bet]?.isSettled && (
@@ -345,13 +348,6 @@ const BetPage = () => {
                     <>
                       <p><strong>Valor apostado:</strong> {betUser[bet].amount}</p>
                       <p><strong>Escolha:</strong> {betUser[bet].choice}</p>
-                      <p><strong>Resultado:</strong> {betUser[bet].status}</p>
-                      {betUser[bet].status === "Won" && (
-                        <p><strong>Valor ganho:</strong> {betUser[bet].amountWon}</p>
-                      )}
-                      {betUser[bet].status === "Lost" && (
-                        <p><strong>Valor perdido: {betUser[bet].amount}</strong></p>)}
-
                     </>
                   )}
 
@@ -430,7 +426,8 @@ const BetPage = () => {
                     <>
                       <p><strong>Valor apostado:</strong> {betUser[bet].amount}</p>
                       <p><strong>Escolha:</strong> {betUser[bet].choice}</p>
-                      <p><strong>Resultado:</strong> {betUser[bet].status}</p>
+
+                      <p><strong>Resultado:</strong> {statusMap(betUser[bet].status)}</p>
                       {betUser[bet].status === "Won" && (
                         <p><strong>Valor ganho:</strong> {betUser[bet].amountWon}</p>
                       )}
