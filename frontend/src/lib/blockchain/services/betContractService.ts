@@ -91,8 +91,8 @@ async function getMatchDetails(signer: ethers.providers.JsonRpcSigner, betContra
     isSettled: match.isSettled,
     result: match.result, 
     owner: match.owner,
-    amounts
     ownerAmount: ethers.utils.formatEther(match.ownerAmount),
+    amounts
   };
 }
 
