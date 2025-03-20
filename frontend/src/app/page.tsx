@@ -422,7 +422,7 @@ const BetPage = () => {
                           <Label htmlFor="amount">Valor (ETH)</Label>
                           <Input
                             id="amount"
-                            type="number"
+                            type="string"
                             {...registerPlaceBet("amount", { required: "Campo obrigatório" })}
                           />
                           {errorsPlaceBet.amount && (
