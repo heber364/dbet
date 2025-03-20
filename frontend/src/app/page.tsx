@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { createBet, getBets } from "../lib/blockchain/services/betFactoryService";
-import { placeBet, getMatchDetails, settleBet, getMyBets } from "../lib/blockchain/services/betContractService";
+import { placeBet, getMatchDetails, settleBet, getMyBets, getContract } from "../lib/blockchain/services/betContractService";
 import { getSigner, getAccount, getBalance } from "../lib/blockchain/wallet";
 import { getProvider } from "../lib/blockchain/provider";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
@@ -72,6 +72,28 @@ const BetPage = () => {
     control: controlSettleMatch,
     formState: { errors: errorsSettleMatch },
   } = useForm<SettleMatchFormData>();
+
+  const addEventListener = async (address: string) =>  {
+    const provider = getProvider();
+    const signer = await getSigner(provider);
+    const contract = getContract(signer, address)
+    contract.on("BetPlaced", async () => {
+      loadBets();
+      loadAccountInfo();
+    });
+    contract.on("PlatformFeeCollected", async () => {
+      loadBets();
+      loadAccountInfo();
+    });
+    contract.on("RewardDistributed", async () => {
+      loadBets();
+      loadAccountInfo();
+    });
+    contract.on("BetSettled", async () => {
+      loadBets();
+      loadAccountInfo();
+    });
+  };
 
   const onCreateBet: SubmitHandler<CreateBetFormData> = async (data) => {
     const matchDate = new Date(data.matchDate).getTime();
@@ -157,6 +179,7 @@ const BetPage = () => {
 
       const details: { [key: string]: BetDetails } = {};
       for (const betAddress of bets) {
+        addEventListener(betAddress);
         const matchDetails = await getMatchDetails(signer, betAddress);
         details[betAddress] = matchDetails;
       }
